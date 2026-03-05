@@ -15,12 +15,17 @@
     overflow: hidden;
     position: fixed;
     top: 0; left: 0;
+    background: #0a0d5c;
   }
   html, body {
-    width: 100%; height: 100%;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     margin: 0; padding: 0;
     background: #0a0d5c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   :root {
@@ -589,8 +594,8 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOUPeVnkyylO_I
 // Fallback direct CSV (used if Apps Script URL not set yet)
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT79zJqeHJfDGaXW2-KlZW9Qo-cSbYKOjoP3XqHUP9eHlZoJcUADUiunkU0pWZKV8auZELg7B-EFZ1Y/pub?output=csv';
 
-const SLIDE_INTERVAL   = 3000;
-const REFRESH_INTERVAL = 30000;
+const SLIDE_INTERVAL   = 6000;
+const REFRESH_INTERVAL = 60000;
 const WATCHDOG_TIMEOUT = 90000;
 const MAX_RETRIES = 5;
 const RETRY_BASE = 4000;
@@ -973,20 +978,31 @@ window.addEventListener('load', boot);
     if (!root) return;
     var sw = window.innerWidth  || screen.width;
     var sh = window.innerHeight || screen.height;
-    var scaleX = sw / DESIGN_W;
-    var scaleY = sh / DESIGN_H;
-    var s = Math.min(scaleX, scaleY);
+
+    // Always scale to fill full width — height scrolls/clips if needed
+    // This is correct for portrait TV displays
+    var s = sw / DESIGN_W;
+
+    // If the scaled height fits within screen height, scale to height instead
+    if (DESIGN_H * s > sh) {
+      s = sh / DESIGN_H;
+    }
+
     root.style.transform = 'scale(' + s + ')';
-    // centre horizontally if screen is wider
+    root.style.transformOrigin = 'top left';
+
+    // Centre on screen
     var offsetX = (sw - DESIGN_W * s) / 2;
-    var offsetY = (sh - DESIGN_H * s) / 2;
+    var offsetY = Math.max(0, (sh - DESIGN_H * s) / 2);
     root.style.left = offsetX + 'px';
     root.style.top  = offsetY + 'px';
+
+    // Fill background behind scaled content
+    document.body.style.background = '#0a0d5c';
   }
   scale();
   window.addEventListener('resize', scale);
-  // also scale after fonts load
-  window.addEventListener('load', scale);
+  window.addEventListener('load', function() { setTimeout(scale, 300); });
 })();
 </script>
 </body>
