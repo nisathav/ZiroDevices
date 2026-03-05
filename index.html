@@ -2,647 +2,946 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>ZIRO DEVICES</title>
+<meta name="viewport" content="width=1080, height=1920">
+<title>ZIRO DEVICES – Digital Signage</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
 
-/* ─── RESET & BASE ───────────────────────────────────────────── */
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100vw;height:100vh;overflow:hidden;background:#060a4a;font-family:'Exo 2',sans-serif}
+  :root {
+    --navy: #1a1fa8;
+    --navy-dark: #10147a;
+    --navy-light: #2830d0;
+    --gold: #f5a800;
+    --gold-light: #ffc93c;
+    --gold-dark: #c88500;
+    --white: #ffffff;
+    --off-white: #f0f4ff;
+    --bg: #0a0d5c;
+  }
 
-/* ─── SCALE ROOT ─────────────────────────────────────────────── */
-/* Fixed 1080×1920 canvas — JS scales it to fit any TV */
-#R{
-  position:fixed;top:0;left:0;
-  width:1080px;height:1920px;
-  transform-origin:top left;
-  overflow:hidden;
-  background:#060a4a;
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ─── BACKGROUND ─────────────────────────────────────────────── */
-#R::before{
-  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 1000px 800px at 50% 0%,   rgba(26,31,168,.6) 0%,transparent 65%),
-    radial-gradient(ellipse  600px 400px at 90% 100%,  rgba(245,168,0,.08) 0%,transparent 60%);
-}
-.grid{
-  position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(245,168,0,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(245,168,0,.035) 1px,transparent 1px);
-  background-size:60px 60px;
-}
+  html, body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: var(--bg);
+    font-family: 'Exo 2', sans-serif;
+  }
 
-/* ─── APP SHELL ──────────────────────────────────────────────── */
-#app{
-  position:relative;z-index:1;
-  width:1080px;height:1920px;
-  display:flex;flex-direction:column;
-}
+  /* ─── BACKGROUND ─────────────────────────────────── */
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(245,168,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,168,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-glow {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 800px 600px at 50% 20%, rgba(26,31,168,0.6) 0%, transparent 70%),
+                radial-gradient(ellipse 600px 400px at 80% 80%, rgba(245,168,0,0.12) 0%, transparent 60%);
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   HEADER  — 210px, bold, readable from 5m away
-═══════════════════════════════════════════════════════════════ */
-.hdr{
-  height:210px;flex-shrink:0;
-  background:linear-gradient(135deg,#0b0f6a 0%,#1a1fa8 55%,#2830d0 100%);
-  border-bottom:6px solid #f5a800;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 52px;
-  box-shadow:0 12px 48px rgba(0,0,0,.7);
-  position:relative;
-}
-.hdr::after{
-  content:'';position:absolute;bottom:-6px;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,#ffc93c,transparent);
-}
-/* Logo */
-.logo-wrap{display:flex;align-items:center;gap:20px}
-.logo-img{height:140px;width:auto;filter:drop-shadow(0 0 20px rgba(245,168,0,.55))}
-.logo-fb{display:none;flex-direction:column}
-.brand{font-family:'Rajdhani',sans-serif;font-size:70px;font-weight:700;color:#fff;letter-spacing:4px;line-height:1;text-shadow:0 0 28px rgba(245,168,0,.35)}
-.brand b{color:#f5a800}
-.sub{font-size:21px;font-weight:500;color:rgba(255,255,255,.7);letter-spacing:5px;text-transform:uppercase;margin-top:4px}
-/* Right side */
-.hdr-r{text-align:right}
-.live{display:inline-flex;align-items:center;gap:10px;background:rgba(245,168,0,.15);border:2px solid rgba(245,168,0,.55);border-radius:40px;padding:10px 26px;margin-bottom:12px}
-.dot{width:16px;height:16px;border-radius:50%;background:#f5a800;animation:pulse 1.4s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,168,0,.7)}50%{box-shadow:0 0 0 10px rgba(245,168,0,0)}}
-.live-txt{font-size:20px;font-weight:800;color:#f5a800;letter-spacing:3px}
-.hdr-loc{font-size:20px;font-weight:500;color:rgba(255,255,255,.6);letter-spacing:1px}
+  /* ─── LAYOUT ─────────────────────────────────────── */
+  #app {
+    position: relative; z-index: 1;
+    width: 1080px; height: 1920px;
+    display: flex; flex-direction: column;
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   CATEGORY STRIP — 72px
-═══════════════════════════════════════════════════════════════ */
-.cats{
-  height:72px;flex-shrink:0;
-  background:linear-gradient(90deg,#0b0f6a,#1a1fa8);
-  border-bottom:3px solid rgba(245,168,0,.3);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.cat{
-  padding:0 40px;height:100%;
-  display:flex;align-items:center;
-  font-size:22px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
-  color:rgba(255,255,255,.38);
-  border-right:1px solid rgba(255,255,255,.08);
-}
-.cat.on{color:#f5a800;background:rgba(245,168,0,.09);border-bottom:5px solid #f5a800}
+  /* ─── HEADER ─────────────────────────────────────── */
+  .header {
+    height: 160px;
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
+    border-bottom: 4px solid var(--gold);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .header::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+  .logo-wrap {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .logo-img {
+    height: 90px; width: auto;
+    filter: drop-shadow(0 0 12px rgba(245,168,0,0.4));
+  }
+  .logo-fallback {
+    display: flex; flex-direction: column;
+  }
+  .brand-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 52px; font-weight: 700;
+    color: var(--white);
+    letter-spacing: 4px;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(245,168,0,0.3);
+  }
+  .brand-name span { color: var(--gold); }
+  .brand-tagline {
+    font-size: 16px; font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .header-right {
+    text-align: right;
+  }
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,168,0,0.15);
+    border: 1px solid rgba(245,168,0,0.4);
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin-bottom: 8px;
+  }
+  .live-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(245,168,0,0.7); }
+    50% { opacity: 0.8; transform: scale(1.15); box-shadow: 0 0 0 6px rgba(245,168,0,0); }
+  }
+  .live-text { font-size: 13px; font-weight: 600; color: var(--gold); letter-spacing: 2px; }
+  .location {
+    font-size: 14px; color: rgba(255,255,255,0.6);
+    letter-spacing: 1px;
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   MAIN — grows to fill remaining space
-═══════════════════════════════════════════════════════════════ */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  /* ─── CATEGORY STRIP ─────────────────────────────── */
+  .category-strip {
+    height: 56px; flex-shrink: 0;
+    background: linear-gradient(90deg, var(--navy-dark), var(--navy));
+    border-bottom: 2px solid rgba(245,168,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    gap: 0;
+    overflow: hidden;
+  }
+  .cat-tab {
+    padding: 0 32px;
+    font-size: 15px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    border-right: 1px solid rgba(255,255,255,0.1);
+    height: 100%; display: flex; align-items: center;
+    transition: all 0.4s;
+  }
+  .cat-tab.active {
+    color: var(--gold);
+    background: rgba(245,168,0,0.08);
+    border-bottom: 3px solid var(--gold);
+  }
 
-/* ─── SLIDE ──────────────────────────────────────────────────── */
-.slide{flex:1;display:flex;flex-direction:column;opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
-.slide.on{opacity:1;transform:translateY(0)}
-.slide-in{display:flex;flex-direction:column;height:100%}
+  /* ─── MAIN CONTENT ───────────────────────────────── */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
 
-/* ─── PRODUCT IMAGE — 580px, dominant ───────────────────────── */
-.img-box{
-  height:580px;flex-shrink:0;
-  background:linear-gradient(170deg,rgba(255,255,255,.04),rgba(255,255,255,.10));
-  border-bottom:3px solid rgba(245,168,0,.2);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;
-}
-.img-box::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 65%,rgba(245,168,0,.08) 0%,transparent 60%);
-}
-.prod-img{max-height:555px;max-width:97%;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 28px 56px rgba(0,0,0,.65))}
-.no-img{display:flex;flex-direction:column;align-items:center;gap:18px;color:rgba(255,255,255,.15)}
-.no-img svg{width:110px;height:110px}
-.no-img span{font-size:19px;letter-spacing:4px;text-transform:uppercase}
+  /* ─── PRODUCT SLIDE ──────────────────────────────── */
+  .product-slide {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    padding: 28px 40px 20px;
+    position: absolute;
+    top: 216px; /* header + strip */
+    left: 0; right: 0;
+    bottom: 180px; /* ticker + footer */
+  }
+  .product-slide.visible {
+    opacity: 1; transform: translateY(0);
+    position: relative; top: auto; bottom: auto;
+    flex: 1;
+  }
 
-/* ─── PRODUCT INFO BLOCK ─────────────────────────────────────── */
-.info{flex:1;display:flex;flex-direction:column;padding:24px 52px 18px;gap:16px}
+  .slide-inner {
+    display: flex; flex-direction: column;
+    height: 100%; gap: 24px;
+  }
 
-/* Name row */
-.badge{
-  display:inline-block;
-  background:rgba(245,168,0,.14);border:1.5px solid rgba(245,168,0,.5);
-  color:#f5a800;font-size:18px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
-  padding:5px 20px;border-radius:6px;margin-bottom:10px;
-}
-.pname{font-family:'Rajdhani',sans-serif;font-size:58px;font-weight:700;color:#fff;line-height:1.05;letter-spacing:1px}
-.cond{display:inline-flex;align-items:center;gap:9px;margin-top:8px;font-size:19px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-.cond-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
-.new  .cond-dot{background:#00e676} .new{color:#00e676}
-.refurb .cond-dot{background:#ff9800} .refurb{color:#ff9800}
-.used .cond-dot{background:#f44336} .used{color:#f44336}
+  /* Product Image */
+  .product-image-wrap {
+    height: 420px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.07));
+    border: 1px solid rgba(245,168,0,0.2);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .product-image-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(245,168,0,0.05) 0%, transparent 70%);
+  }
+  .product-img {
+    max-height: 400px; max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+    position: relative; z-index: 1;
+    transition: transform 0.3s ease;
+  }
+  .img-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    color: rgba(255,255,255,0.2);
+  }
+  .img-placeholder svg { width: 80px; height: 80px; }
+  .img-placeholder span { font-size: 14px; letter-spacing: 2px; }
 
-/* ─── PRICE — the hero element ───────────────────────────────── */
-.price-box{
-  flex-shrink:0;
-  background:linear-gradient(130deg,rgba(245,168,0,.15),rgba(245,168,0,.04));
-  border:2.5px solid rgba(245,168,0,.45);
-  border-radius:20px;
-  padding:18px 36px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.p-left{}
-.p-lbl{font-size:18px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:0}
-.p-val{
-  font-family:'Rajdhani',sans-serif;
-  font-size:104px;font-weight:700;color:#f5a800;line-height:.95;letter-spacing:-2px;
-  text-shadow:0 0 50px rgba(245,168,0,.55),0 0 100px rgba(245,168,0,.2);
-}
-.p-cur{font-size:40px;font-weight:600;vertical-align:super;color:#ffc93c;letter-spacing:0}
-.p-right{text-align:right}
-.p-avail{font-size:16px;letter-spacing:2px;color:rgba(255,255,255,.38);text-transform:uppercase;margin-bottom:10px}
-.p-badge{
-  display:inline-block;
-  background:#f5a800;color:#0b0f6a;
-  font-size:22px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
-  padding:10px 26px;border-radius:12px;
-  box-shadow:0 4px 20px rgba(245,168,0,.4);
-}
+  /* Product Header */
+  .product-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 20px;
+  }
+  .product-name-wrap { flex: 1; }
+  .product-category-badge {
+    display: inline-block;
+    background: rgba(245,168,0,0.15);
+    border: 1px solid rgba(245,168,0,0.4);
+    color: var(--gold);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 4px 14px; border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .product-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 42px; font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: 1px;
+  }
+  .product-condition {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 8px;
+    font-size: 13px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .condition-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .condition-new .condition-dot { background: #00e676; }
+  .condition-refurbished .condition-dot { background: #ff9800; }
+  .condition-used .condition-dot { background: #f44336; }
+  .condition-new { color: #00e676; }
+  .condition-refurbished { color: #ff9800; }
+  .condition-used { color: #f44336; }
 
-/* ─── SPECS — compact inline rows ───────────────────────────── */
-.specs{
-  flex-shrink:0;
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:16px;overflow:hidden;
-}
-.srow{
-  display:flex;align-items:center;
-  padding:14px 30px;
-  border-bottom:1px solid rgba(255,255,255,.07);
-}
-.srow:last-child{border-bottom:none}
-.srow:nth-child(odd) {background:rgba(255,255,255,.03)}
-.srow:nth-child(even){background:rgba(255,255,255,.065)}
-.sico{font-size:24px;width:44px;text-align:center;flex-shrink:0}
-.slbl{font-size:19px;font-weight:700;color:#f5a800;letter-spacing:2px;text-transform:uppercase;width:210px;flex-shrink:0;margin-left:10px}
-.ssep{color:rgba(245,168,0,.3);font-size:22px;margin:0 22px;flex-shrink:0}
-.sval{font-size:22px;font-weight:600;color:#fff;flex:1;line-height:1.2}
+  /* Price */
+  .price-box {
+    text-align: right; flex-shrink: 0;
+  }
+  .price-label {
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.5); margin-bottom: 4px;
+  }
+  .price-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 54px; font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(245,168,0,0.4);
+  }
+  .price-currency {
+    font-size: 24px; font-weight: 600;
+    vertical-align: super; color: var(--gold-light);
+  }
 
-/* ─── PROMO BANNER ───────────────────────────────────────────── */
-.promo{
-  flex-shrink:0;
-  background:linear-gradient(90deg,#c88500,#f5a800,#ffc93c,#f5a800,#c88500);
-  background-size:300% 100%;
-  animation:shimmer 2.2s linear infinite;
-  border-radius:18px;
-  padding:26px 40px;
-  display:flex;align-items:center;justify-content:center;gap:22px;
-}
-@keyframes shimmer{0%{background-position:0%}100%{background-position:300%}}
-.p-ico{font-size:44px;flex-shrink:0;animation:bop .85s ease-in-out infinite alternate}
-@keyframes bop{from{transform:scale(1) rotate(-4deg)}to{transform:scale(1.3) rotate(4deg)}}
-.p-txt{
-  font-family:'Rajdhani',sans-serif;
-  font-size:38px;font-weight:700;
-  color:#0b0f6a;text-align:center;letter-spacing:1px;line-height:1.15;
-  text-shadow:0 1px 0 rgba(255,255,255,.35);
-}
+  /* Specs Grid */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    flex: 1;
+  }
+  .spec-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 3px solid rgba(245,168,0,0.5);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .spec-label {
+    font-size: 11px; font-weight: 600;
+    color: rgba(245,168,0,0.7);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .spec-value {
+    font-size: 16px; font-weight: 500;
+    color: var(--white);
+    line-height: 1.3;
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   SLIDE DOTS
-═══════════════════════════════════════════════════════════════ */
-.dots{display:flex;justify-content:center;align-items:center;gap:12px;padding:10px 0;flex-shrink:0}
-.dot2{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s}
-.dot2.on{background:#f5a800;transform:scale(1.6);box-shadow:0 0 10px rgba(245,168,0,.7)}
+  /* Promo Banner */
+  .promo-banner {
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light), var(--gold));
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+    border-radius: 12px;
+    padding: 16px 28px;
+    display: flex; align-items: center; gap: 16px;
+    flex-shrink: 0;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .promo-icon { font-size: 28px; flex-shrink: 0; }
+  .promo-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--navy-dark);
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   TICKER — 70px gold bar
-═══════════════════════════════════════════════════════════════ */
-.ticker{
-  height:70px;flex-shrink:0;
-  background:#f5a800;
-  border-top:4px solid #c88500;border-bottom:4px solid #c88500;
-  display:flex;align-items:center;overflow:hidden;
-}
-.t-lbl{
-  background:#0b0f6a;color:#f5a800;
-  font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase;
-  padding:0 32px;height:100%;display:flex;align-items:center;
-  white-space:nowrap;flex-shrink:0;border-right:4px solid #c88500;
-}
-.t-track{flex:1;overflow:hidden}
-.t-inner{display:flex;align-items:center;white-space:nowrap;animation:scroll 25s linear infinite}
-@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.t-item{font-size:22px;font-weight:700;color:#0b0f6a;padding:0 56px;letter-spacing:1px}
-.t-sep{color:#0b0f6a;font-size:24px;opacity:.3}
+  /* ─── SLIDE COUNTER ──────────────────────────────── */
+  .slide-counter {
+    display: flex; justify-content: center; align-items: center; gap: 8px;
+    padding: 6px 0 2px;
+    flex-shrink: 0;
+  }
+  .counter-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.3s;
+  }
+  .counter-dot.active {
+    background: var(--gold);
+    transform: scale(1.4);
+    box-shadow: 0 0 6px rgba(245,168,0,0.6);
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   FOOTER — 176px, large text, clearly readable
-═══════════════════════════════════════════════════════════════ */
-.footer{
-  height:176px;flex-shrink:0;
-  background:linear-gradient(135deg,#0b0f6a 0%,#0e1475 100%);
-  border-top:5px solid rgba(245,168,0,.65);
-  display:flex;align-items:center;
-  padding:0 52px;gap:32px;
-}
-/* WhatsApp button */
-.wa{
-  background:#25D366;border-radius:18px;
-  padding:20px 30px;
-  display:flex;align-items:center;gap:18px;
-  flex-shrink:0;text-decoration:none;
-  box-shadow:0 8px 30px rgba(37,211,102,.45);
-}
-.wa svg{width:44px;height:44px;fill:#fff}
-.wa-t{display:flex;flex-direction:column;gap:2px}
-.wa-l{font-size:15px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:2px;text-transform:uppercase}
-.wa-a{font-size:28px;font-weight:900;color:#fff}
-/* Divider */
-.fdiv{width:2px;height:110px;background:linear-gradient(to bottom,transparent,rgba(245,168,0,.55),transparent);flex-shrink:0}
-/* Contact info */
-.fcon{flex:1;display:flex;flex-direction:column;gap:16px}
-.crow{display:flex;align-items:center;gap:16px}
-.fico{width:30px;height:30px;color:#f5a800;flex-shrink:0}
-.ftxt{font-size:25px;font-weight:600;color:#fff;letter-spacing:.5px}
-.ftxt b{color:#f5a800;font-weight:900}
-/* Location */
-.floc{text-align:right;flex-shrink:0}
-.floc-n{font-size:21px;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:1px;line-height:1.65}
-.floc-n strong{color:#f5a800;display:block;font-size:25px;font-weight:800}
+  /* ─── TICKER ─────────────────────────────────────── */
+  .ticker-wrap {
+    height: 52px; flex-shrink: 0;
+    background: var(--gold);
+    overflow: hidden;
+    display: flex; align-items: center;
+    position: relative;
+    border-top: 2px solid var(--gold-dark);
+    border-bottom: 2px solid var(--gold-dark);
+  }
+  .ticker-label {
+    background: var(--navy-dark);
+    color: var(--gold);
+    font-size: 14px; font-weight: 800;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 0 24px;
+    height: 100%; display: flex; align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+    z-index: 2;
+    border-right: 3px solid var(--gold-dark);
+  }
+  .ticker-track {
+    flex: 1; overflow: hidden;
+  }
+  .ticker-inner {
+    display: flex; align-items: center;
+    white-space: nowrap;
+    animation: ticker-scroll 28s linear infinite;
+  }
+  .ticker-item {
+    font-size: 16px; font-weight: 700;
+    color: var(--navy-dark);
+    padding: 0 48px;
+    letter-spacing: 1px;
+  }
+  .ticker-sep {
+    color: var(--navy-dark);
+    font-size: 20px; opacity: 0.4;
+  }
+  @keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
 
-/* ═══════════════════════════════════════════════════════════════
-   LOADING OVERLAY
-═══════════════════════════════════════════════════════════════ */
-#ov{
-  position:absolute;inset:0;z-index:999;background:#060a4a;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;
-  transition:opacity .5s;
-}
-#ov.off{opacity:0;pointer-events:none}
-.spin{width:80px;height:80px;border:6px solid rgba(245,168,0,.2);border-top-color:#f5a800;border-radius:50%;animation:sp .8s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-#omsg{font-size:24px;color:rgba(255,255,255,.6);letter-spacing:3px;text-transform:uppercase}
-#ocd{font-size:20px;color:#f5a800;letter-spacing:2px;display:none}
+  /* ─── FOOTER ─────────────────────────────────────── */
+  .footer {
+    height: 120px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--navy-dark) 0%, #0e1260 100%);
+    border-top: 3px solid rgba(245,168,0,0.5);
+    display: flex; align-items: center;
+    padding: 0 40px;
+    gap: 24px;
+  }
+  .wa-btn {
+    background: #25D366;
+    border-radius: 14px;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.3);
+    text-decoration: none;
+  }
+  .wa-btn svg { width: 28px; height: 28px; fill: white; }
+  .wa-btn-text {
+    display: flex; flex-direction: column;
+  }
+  .wa-btn-label {
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.8); letter-spacing: 2px; text-transform: uppercase;
+  }
+  .wa-btn-action {
+    font-size: 18px; font-weight: 700; color: white;
+  }
+
+  .footer-divider {
+    width: 2px; height: 70px;
+    background: linear-gradient(to bottom, transparent, rgba(245,168,0,0.4), transparent);
+    flex-shrink: 0;
+  }
+
+  .footer-contact {
+    flex: 1;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .contact-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .contact-icon { width: 20px; height: 20px; color: var(--gold); flex-shrink: 0; }
+  .contact-text {
+    font-size: 17px; font-weight: 500;
+    color: var(--white); letter-spacing: 0.5px;
+  }
+  .contact-text span { color: var(--gold); font-weight: 700; }
+
+  .footer-location {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .location-icon { color: var(--gold); font-size: 22px; }
+  .location-name {
+    font-size: 15px; font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 1px;
+    line-height: 1.5;
+  }
+  .location-name strong { color: var(--gold); display: block; font-size: 18px; }
+
+  /* ─── LOADING / ERROR ────────────────────────────── */
+  .status-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 24px;
+    transition: opacity 0.5s;
+  }
+  .status-overlay.hidden { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 60px; height: 60px;
+    border: 4px solid rgba(245,168,0,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-msg {
+    font-size: 18px; color: rgba(255,255,255,0.6);
+    letter-spacing: 2px;
+  }
+  .error-icon { font-size: 48px; }
+  .retry-countdown {
+    font-size: 14px; color: var(--gold);
+    letter-spacing: 1px;
+  }
 </style>
 </head>
 <body>
-<div id="R">
-  <div class="grid"></div>
 
-  <!-- LOADING -->
-  <div id="ov">
-    <div class="spin"></div>
-    <div id="omsg">LOADING PRODUCTS…</div>
-    <div id="ocd"></div>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- Loading overlay -->
+<div class="status-overlay" id="statusOverlay">
+  <div class="spinner" id="spinnerEl"></div>
+  <div id="statusMsg" class="status-msg">LOADING PRODUCTS…</div>
+  <div id="retryCountdown" class="retry-countdown" style="display:none"></div>
+</div>
+
+<div id="app" style="display:none">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-wrap">
+      <img class="logo-img" id="logoImg" src="https://i.imgur.com/uE4Bc7W.png"
+           onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'"
+           alt="ZIRO DEVICES Logo">
+      <div class="logo-fallback" id="logoFallback" style="display:none">
+        <div class="brand-name">ZIRO <span>DEVICES</span></div>
+        <div class="brand-tagline">Laptop Specialists · Kinniya</div>
+      </div>
+      <div class="logo-fallback" id="logoText">
+        <div class="brand-tagline" style="margin-top:0">LAPTOP SPECIALISTS</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span class="live-text">LIVE PRICES</span>
+      </div>
+      <div class="location">Kinniya, Trincomalee</div>
+    </div>
   </div>
 
-  <div id="app" style="display:none">
+  <!-- CATEGORY STRIP -->
+  <div class="category-strip" id="categoryStrip"></div>
 
-    <!-- ══ HEADER ══ -->
-    <div class="hdr">
-      <div class="logo-wrap">
-        <img class="logo-img" id="LI"
-          src="https://i.imgur.com/uE4Bc7W.png"
-          onerror="this.style.display='none';document.getElementById('LF').style.display='flex'"
-          alt="ZIRO DEVICES">
-        <div class="logo-fb" id="LF">
-          <div class="brand">ZIRO <b>DEVICES</b></div>
-          <div class="sub">Laptop Specialists</div>
-        </div>
-        <div class="sub" style="align-self:flex-end;padding-bottom:6px">LAPTOP SPECIALISTS</div>
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
+    <!-- Products rendered here -->
+  </div>
+
+  <!-- SLIDE DOTS -->
+  <div class="slide-counter" id="slideCounter"></div>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-label">📞 CONTACT</div>
+    <div class="ticker-track">
+      <div class="ticker-inner" id="tickerInner"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <a class="wa-btn" href="#">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      <div class="wa-btn-text">
+        <span class="wa-btn-label">Order via</span>
+        <span class="wa-btn-action">WhatsApp</span>
       </div>
-      <div class="hdr-r">
-        <div class="live"><div class="dot"></div><span class="live-txt">LIVE PRICES</span></div>
-        <div class="hdr-loc">📍 Kinniya, Trincomalee</div>
+    </a>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-contact">
+      <div class="contact-row">
+        <svg class="contact-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+        <span class="contact-text"><span>075 675 4168</span> &nbsp;/&nbsp; <span>076 556 1881</span></span>
+      </div>
+      <div class="contact-row">
+        <svg class="contact-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span class="contact-text">Kinniya, <span>Trincomalee</span>, Sri Lanka</span>
       </div>
     </div>
 
-    <!-- ══ CATEGORY STRIP ══ -->
-    <div class="cats" id="cats"></div>
-
-    <!-- ══ MAIN / PRODUCT SLIDE ══ -->
-    <div class="main" id="main"></div>
-
-    <!-- ══ DOTS ══ -->
-    <div class="dots" id="dots"></div>
-
-    <!-- ══ TICKER ══ -->
-    <div class="ticker">
-      <div class="t-lbl">📞 CONTACT</div>
-      <div class="t-track"><div class="t-inner" id="ticker"></div></div>
-    </div>
-
-    <!-- ══ FOOTER ══ -->
-    <div class="footer">
-      <a class="wa" id="waBtn" href="#">
-        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        <div class="wa-t"><span class="wa-l">Order via</span><span class="wa-a">WhatsApp</span></div>
-      </a>
-      <div class="fdiv"></div>
-      <div class="fcon">
-        <div class="crow">
-          <svg class="fico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-          <span class="ftxt"><b>075 675 4168</b> &nbsp;/&nbsp; <b>076 556 1881</b></span>
-        </div>
-        <div class="crow">
-          <svg class="fico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-          <span class="ftxt">Kinniya, <b>Trincomalee</b>, Sri Lanka</span>
-        </div>
-      </div>
-      <div class="floc">
-        <div class="floc-n"><strong>ZIRO DEVICES</strong>Open Daily<br>9 AM – 8 PM</div>
+    <div class="footer-location">
+      <div class="location-name">
+        <strong>ZIRO DEVICES</strong>
+        Open Daily<br>9 AM – 8 PM
       </div>
     </div>
+  </div>
 
-  </div><!-- #app -->
-</div><!-- #R -->
+</div>
 
 <script>
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  CONFIG
-// ════════════════════════════════════════════════════════════
-var AS   = 'https://script.google.com/macros/s/AKfycbxOUPeVnkyylO_ID3pyg-scmxEyAAWY-MSZZSC0GiIOB89_1qToJC_mUBP8Op1a50WV/exec';
-var WA   = '94756754168';
-var TICK = 7500;   // ms per slide
-var REF  = 60000;  // data refresh interval
-var WD   = 95000;  // watchdog timeout
-var MAXR = 5;      // max retries
-var RBASE= 4000;   // retry base delay
+// ═══════════════════════════════════════════════════
+// ── STEP 1: Paste your Google Apps Script Web App URL below ──────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvM_gtLRC0dni8_bGtlidm5HkvlUdBO2D7UI0onWhg7_bAwlOqtxGS_doJNm5uc8dO/exec';
+// ─────────────────────────────────────────────────────────────────
 
-// ════════════════════════════════════════════════════════════
+// Fallback direct CSV (used if Apps Script URL not set yet)
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT79zJqeHJfDGaXW2-KlZW9Qo-cSbYKOjoP3XqHUP9eHlZoJcUADUiunkU0pWZKV8auZELg7B-EFZ1Y/pub?output=csv';
+
+const SLIDE_INTERVAL   = 6000;
+const REFRESH_INTERVAL = 60000;
+const WATCHDOG_TIMEOUT = 90000;
+const MAX_RETRIES = 5;
+const RETRY_BASE = 4000;
+
+const WA_NUMBER = '94756754168';
+
+// ═══════════════════════════════════════════════════
 //  STATE
-// ════════════════════════════════════════════════════════════
-var prods=[], cur=0, stimer=null, wtimer=null, running=false;
+// ═══════════════════════════════════════════════════
+let products      = [];
+let currentSlide  = 0;
+let slideTimer    = null;
+let refreshTimer  = null;
+let watchdogTimer = null;
+let retryCount    = 0;
+let lastActivity  = Date.now();
+let isRunning     = false;
 
-// ════════════════════════════════════════════════════════════
-//  AUTO-SCALE  (learned: use Math.min of both axes)
-// ════════════════════════════════════════════════════════════
-function fit(){
-  var R=document.getElementById('R');
-  var sw=window.innerWidth, sh=window.innerHeight;
-  var s=Math.min(sw/1080, sh/1920);
-  R.style.transform='scale('+s+')';
-  R.style.left=Math.max(0,(sw-1080*s)/2)+'px';
-  R.style.top =Math.max(0,(sh-1920*s)/2)+'px';
-}
-fit();
-window.addEventListener('resize',fit);
-
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  WATCHDOG
-// ════════════════════════════════════════════════════════════
-function resetWD(){
-  clearTimeout(wtimer);
-  wtimer=setTimeout(function(){location.reload();},WD);
+// ═══════════════════════════════════════════════════
+function resetWatchdog() {
+  lastActivity = Date.now();
+  clearTimeout(watchdogTimer);
+  watchdogTimer = setTimeout(() => {
+    console.warn('[WATCHDOG] App hung – reloading…');
+    location.reload();
+  }, WATCHDOG_TIMEOUT);
 }
 
-// ════════════════════════════════════════════════════════════
-//  FETCH — JSONP only (fetch() blocked by Yodeck)
-//  Learned: script-tag injection bypasses Yodeck network block
-// ════════════════════════════════════════════════════════════
-function fetchData(){
-  return new Promise(function(ok,fail){
-    // clean up any previous attempt
-    var old=document.getElementById('_js');
-    if(old) old.parentNode.removeChild(old);
+// ═══════════════════════════════════════════════════
+//  CSV PARSER  (handles quoted fields with commas)
+// ═══════════════════════════════════════════════════
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const row = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ) {
+        row.push(cur.trim()); cur = '';
+      } else cur += ch;
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
 
-    var cb='_zc'+Date.now();
-    var tid=setTimeout(function(){
-      delete window[cb];
-      fail(new Error('timeout'));
-    },18000);
+function csvToProducts(rows) {
+  if (!rows.length) return [];
+  const data = rows[0][0].toLowerCase().includes('product') ? rows.slice(1) : rows;
+  return data
+    .filter(r => r[0])
+    .map(r => ({
+      name:      r[0]  || '',
+      category:  r[1]  || 'Laptop',
+      price:     r[2]  || '',
+      condition: r[3]  || '',
+      processor: r[4]  || '',
+      ram:       r[5]  || '',
+      storage:   r[6]  || '',
+      display:   r[7]  || '',
+      battery:   r[8]  || '',
+      os:        r[9]  || '',
+      imageUrl:  r[10] || '',
+      promoText: r[11] || 'Ask about our special deals & warranty packages!'
+    }));
+}
 
-    window[cb]=function(res){
-      clearTimeout(tid);
-      delete window[cb];
-      var s=document.getElementById('_js');
-      if(s) s.parentNode.removeChild(s);
-      if(res&&res.data&&res.data.length) ok(res.data);
-      else fail(new Error('empty'));
-    };
+// ═══════════════════════════════════════════════════
+//  FETCH WITH RETRY + BACKOFF
+// ═══════════════════════════════════════════════════
+async function fetchData() {
+  const bust = '&t=' + Date.now();
+  let lastErr;
 
-    var s=document.createElement('script');
-    s.id='_js';
-    s.src=AS+'?callback='+cb+'&t='+Date.now();
-    s.onerror=function(){
-      clearTimeout(tid);
-      delete window[cb];
-      fail(new Error('load error'));
-    };
-    document.head.appendChild(s);
+  // ── Strategy 1: Google Apps Script relay (most reliable) ─────────
+  const appsScriptSet = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  if (appsScriptSet) {
+    try {
+      const url = APPS_SCRIPT_URL + '?t=' + Date.now();
+      console.log('[FETCH] Trying Apps Script relay…');
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if (json.data && json.data.length) {
+        console.log('[FETCH] Apps Script OK, products:', json.data.length);
+        retryCount = 0;
+        return json.data;
+      }
+      throw new Error('Empty data from Apps Script');
+    } catch (err) {
+      console.warn('[FETCH] Apps Script failed:', err.message);
+      lastErr = err;
+    }
+  }
+
+  // ── Strategy 2: Direct fetch (works on GitHub Pages + published sheet) ──
+  try {
+    console.log('[FETCH] Trying direct CSV fetch…');
+    const res = await fetch(CSV_URL + bust, { cache: 'no-store', mode: 'cors' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    if (text.trim().startsWith('<')) throw new Error('Got HTML not CSV');
+    const rows = parseCSV(text);
+    const parsed = csvToProducts(rows);
+    if (parsed.length) {
+      console.log('[FETCH] Direct CSV OK, products:', parsed.length);
+      retryCount = 0;
+      return parsed;
+    }
+    throw new Error('0 products parsed');
+  } catch (err) {
+    console.warn('[FETCH] Direct failed:', err.message);
+    lastErr = err;
+  }
+
+  throw lastErr || new Error('All fetch strategies failed');
+}
+
+async function loadWithRetry() {
+  for (let i = 0; i <= MAX_RETRIES; i++) {
+    try {
+      showLoading(i > 0 ? `RETRYING (${i}/${MAX_RETRIES})…` : 'LOADING PRODUCTS…');
+      const data = await fetchData();
+      return data;
+    } catch(e) {
+      if (i === MAX_RETRIES) throw e;
+      const delay = RETRY_BASE * Math.pow(2, i);
+      await countdown(delay, `RETRY IN`);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════
+function showLoading(msg) {
+  document.getElementById('statusOverlay').classList.remove('hidden');
+  document.getElementById('spinnerEl').style.display = 'block';
+  document.getElementById('statusMsg').textContent = msg;
+  document.getElementById('retryCountdown').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+}
+
+function showError(msg) {
+  document.getElementById('statusOverlay').classList.remove('hidden');
+  document.getElementById('spinnerEl').style.display = 'none';
+  document.getElementById('statusMsg').textContent = msg;
+}
+
+function hideLoading() {
+  document.getElementById('statusOverlay').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+}
+
+function countdown(ms, prefix) {
+  return new Promise(resolve => {
+    const el = document.getElementById('retryCountdown');
+    el.style.display = 'block';
+    let rem = Math.ceil(ms / 1000);
+    el.textContent = `${prefix} ${rem}s…`;
+    const t = setInterval(() => {
+      rem--;
+      if (rem <= 0) { clearInterval(t); resolve(); }
+      else el.textContent = `${prefix} ${rem}s…`;
+    }, 1000);
   });
 }
 
-// ════════════════════════════════════════════════════════════
-//  HELPERS
-// ════════════════════════════════════════════════════════════
-function fmtPrice(p){
-  var n=parseFloat(String(p).replace(/[^0-9.]/g,''));
-  return isNaN(n)?p:n.toLocaleString('en-LK');
-}
-function ccls(c){
-  if(!c) return '';
-  var l=c.toLowerCase();
-  return l.includes('new')?'new':l.includes('refurb')?'refurb':'used';
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
+function getConditionClass(cond) {
+  if (!cond) return '';
+  const c = cond.toLowerCase();
+  if (c.includes('new')) return 'condition-new';
+  if (c.includes('refurb')) return 'condition-refurbished';
+  return 'condition-used';
 }
 
-// ════════════════════════════════════════════════════════════
-//  LOADING UI
-// ════════════════════════════════════════════════════════════
-function showLoad(msg){
-  var ov=document.getElementById('ov');
-  ov.classList.remove('off');
-  document.getElementById('omsg').textContent=msg;
-  document.getElementById('ocd').style.display='none';
-  document.getElementById('app').style.display='none';
-}
-function hideLoad(){
-  document.getElementById('ov').classList.add('off');
-  document.getElementById('app').style.display='flex';
-  fit();
-}
-function startCD(ms){
-  return new Promise(function(res){
-    var el=document.getElementById('ocd');
-    el.style.display='block';
-    var r=Math.ceil(ms/1000);
-    el.textContent='RETRY IN '+r+'s';
-    var t=setInterval(function(){
-      r--;
-      el.textContent='RETRY IN '+r+'s';
-      if(r<=0){clearInterval(t);res();}
-    },1000);
-  });
+function formatPrice(price) {
+  const num = parseFloat(price.toString().replace(/[^0-9.]/g, ''));
+  if (isNaN(num)) return price;
+  return num.toLocaleString('en-LK');
 }
 
-// ════════════════════════════════════════════════════════════
-//  RENDER SLIDE
-// ════════════════════════════════════════════════════════════
-var ICO={Processor:'⚙️',RAM:'💾',Storage:'💿',Display:'🖥️',Battery:'🔋',OS:'💻'};
-
-function renderSlide(i){
-  var p=prods[i]; if(!p) return;
-  var cc=ccls(p.condition);
-
-  // Specs rows (only non-empty)
-  var specs=[
-    {l:'Processor',v:p.processor},
-    {l:'RAM',v:p.ram},
-    {l:'Storage',v:p.storage},
-    {l:'Display',v:p.display},
-    {l:'Battery',v:p.battery},
-    {l:'OS',v:p.os}
-  ].filter(function(s){return s.v&&s.v.trim();});
-
-  var sh=specs.map(function(s){
-    return '<div class="srow">'+
-      '<span class="sico">'+(ICO[s.l]||'▸')+'</span>'+
-      '<span class="slbl">'+s.l+'</span>'+
-      '<span class="ssep">|</span>'+
-      '<span class="sval">'+s.v+'</span>'+
-    '</div>';
-  }).join('');
-
-  // Image
-  var ih=p.imageUrl&&p.imageUrl.trim()
-    ?'<img class="prod-img" src="'+p.imageUrl+'" alt="'+p.name+'" '+
-      'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
-      '<div class="no-img" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>NO IMAGE</span></div>'
-    :'<div class="no-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>NO IMAGE</span></div>';
-
-  // WhatsApp link
-  var wm=encodeURIComponent('Hi ZIRO DEVICES! I\'m interested in: '+p.name+(p.price?' (LKR '+fmtPrice(p.price)+')':'')+'. Please share more details.');
-  document.getElementById('waBtn').href='https://wa.me/'+WA+'?text='+wm;
-
-  document.getElementById('main').innerHTML=
-    '<div class="slide on"><div class="slide-in">'+
-
-    // Image
-    '<div class="img-box">'+ih+'</div>'+
-
-    // Info
-    '<div class="info">'+
-
-      // Name block
-      '<div>'+
-        (p.category?'<div class="badge">'+p.category+'</div><br>':'')+
-        '<div class="pname">'+p.name+'</div>'+
-        (p.condition?'<div class="cond '+cc+'"><div class="cond-dot"></div>'+p.condition+'</div>':'')+
-      '</div>'+
-
-      // Price
-      '<div class="price-box">'+
-        '<div class="p-left">'+
-          '<div class="p-lbl">Selling Price</div>'+
-          '<div class="p-val"><span class="p-cur">Rs.</span>'+fmtPrice(p.price)+'</div>'+
-        '</div>'+
-        '<div class="p-right">'+
-          '<div class="p-avail">Available Now</div>'+
-          '<div class="p-badge">✅ IN STOCK</div>'+
-        '</div>'+
-      '</div>'+
-
-      // Specs
-      (sh?'<div class="specs">'+sh+'</div>':'')+
-
-      // Promo
-      (p.promoText?
-        '<div class="promo">'+
-          '<span class="p-ico">🔥</span>'+
-          '<span class="p-txt">'+p.promoText+'</span>'+
-          '<span class="p-ico">🔥</span>'+
-        '</div>':'')+
-
-    '</div>'+ // .info
-    '</div></div>'; // .slide-in .slide
-
-  buildDots();
-  buildCats();
-  resetWD();
-}
-
-// ════════════════════════════════════════════════════════════
-//  CATEGORY STRIP & DOTS
-// ════════════════════════════════════════════════════════════
-function buildCats(){
-  var seen={},list=[];
-  prods.forEach(function(p){if(p.category&&!seen[p.category]){seen[p.category]=1;list.push(p.category);}});
-  list=list.slice(0,5);
-  var ac=prods[cur]?prods[cur].category:'';
-  document.getElementById('cats').innerHTML=list.map(function(c){
-    return '<div class="cat'+(c===ac?' on':'')+'">'+(c.length>10?c.slice(0,10)+'…':c)+'</div>';
-  }).join('');
-}
-function buildDots(){
-  var n=Math.min(prods.length,14);
-  document.getElementById('dots').innerHTML=Array.from({length:n},function(_,i){
-    return '<div class="dot2'+(i===cur?' on':'')+'"></div>';
-  }).join('');
-}
-
-// ════════════════════════════════════════════════════════════
-//  TICKER
-// ════════════════════════════════════════════════════════════
-function buildTicker(){
-  var items=[
+function buildTickerContent() {
+  const items = [
     '📞 075 675 4168',
     '📞 076 556 1881',
     '📍 Kinniya, Trincomalee, Sri Lanka',
-    '💬 WhatsApp us to order anytime!',
-    '🛡️ Warranty on all products',
-    '💻 Quality laptops – best prices',
+    '💬 Order via WhatsApp anytime!',
+    '🛡️ All products come with warranty',
+    '💻 Quality laptops at unbeatable prices',
+    '⭐ Visit ZIRO DEVICES today!',
     '🔧 Sales · Repairs · Accessories',
-    '⭐ Visit ZIRO DEVICES today!'
   ];
-  var d=items.concat(items);
-  document.getElementById('ticker').innerHTML=d.map(function(t){
-    return '<span class="t-item">'+t+'</span><span class="t-sep">◆</span>';
-  }).join('');
+  const doubled = [...items, ...items];
+  const inner = document.getElementById('tickerInner');
+  inner.innerHTML = doubled.map(t =>
+    `<span class="ticker-item">${t}</span><span class="ticker-sep">•</span>`
+  ).join('');
 }
 
-// ════════════════════════════════════════════════════════════
-//  SLIDESHOW
-// ════════════════════════════════════════════════════════════
-function next(){cur=(cur+1)%prods.length;renderSlide(cur);}
-function startShow(){clearInterval(stimer);renderSlide(cur);stimer=setInterval(next,TICK);}
-
-// ════════════════════════════════════════════════════════════
-//  SILENT REFRESH (every 60s, keeps current slide)
-// ════════════════════════════════════════════════════════════
-function silentRefresh(){
-  fetchData().then(function(d){if(d&&d.length)prods=d;}).catch(function(){});
-  resetWD();
+function buildCategoryStrip() {
+  const cats = [...new Set(products.map(p => p.category).filter(Boolean))].slice(0, 5);
+  const strip = document.getElementById('categoryStrip');
+  const activeCat = products[currentSlide]?.category || '';
+  strip.innerHTML = cats.map(c =>
+    `<div class="cat-tab${c === activeCat ? ' active' : ''}">${c}</div>`
+  ).join('');
 }
 
-// ════════════════════════════════════════════════════════════
-//  BOOT  (retry loop with countdown)
-// ════════════════════════════════════════════════════════════
-async function boot(){
-  resetWD(); buildTicker(); fit();
+function buildDots() {
+  const ctr = document.getElementById('slideCounter');
+  const max = Math.min(products.length, 12);
+  ctr.innerHTML = Array.from({length: max}, (_, i) =>
+    `<div class="counter-dot${i === currentSlide ? ' active' : ''}"></div>`
+  ).join('');
+}
 
-  for(var a=0;a<=MAXR;a++){
-    showLoad(a>0?'RETRYING ('+a+'/'+MAXR+')…':'LOADING PRODUCTS…');
-    try{
-      var data=await fetchData();
-      if(data&&data.length){
-        prods=data;
-        hideLoad();
-        cur=0; startShow();
-        setInterval(silentRefresh,REF);
-        running=true;
-        return;
-      }
-    }catch(e){console.warn('[BOOT]',a,e.message);}
+function renderSlide(index) {
+  const p = products[index];
+  if (!p) return;
 
-    if(a<MAXR) await startCD(RBASE*Math.pow(2,a));
+  const main = document.getElementById('mainContent');
+  const condClass = getConditionClass(p.condition);
+
+  const specsData = [
+    { label: 'Processor', value: p.processor },
+    { label: 'RAM',       value: p.ram },
+    { label: 'Storage',   value: p.storage },
+    { label: 'Display',   value: p.display },
+    { label: 'Battery',   value: p.battery },
+    { label: 'OS',        value: p.os },
+  ].filter(s => s.value);
+
+  const specsHTML = specsData.map(s => `
+    <div class="spec-item">
+      <span class="spec-label">${s.label}</span>
+      <span class="spec-value">${s.value}</span>
+    </div>`
+  ).join('');
+
+  const imgHTML = p.imageUrl
+    ? `<img class="product-img" src="${p.imageUrl}" alt="${p.name}"
+            onerror="this.parentElement.innerHTML='<div class=\\'img-placeholder\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1\\'><rect x=\\'2\\' y=\\'3\\' width=\\'20\\' height=\\'14\\' rx=\\'2\\'/><path d=\\'M8 21h8M12 17v4\\'/></svg><span>IMAGE UNAVAILABLE</span></div>'">`
+    : `<div class="img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+        <span>NO IMAGE</span>
+      </div>`;
+
+  // Build WhatsApp order link
+  const waMsg = encodeURIComponent(`Hi ZIRO DEVICES! I'm interested in: ${p.name} (${p.price ? 'LKR ' + formatPrice(p.price) : ''}). Please share more details.`);
+  document.querySelector('.wa-btn').href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
+
+  main.innerHTML = `
+    <div class="product-slide visible">
+      <div class="slide-inner">
+        <div class="product-image-wrap">${imgHTML}</div>
+
+        <div class="product-header">
+          <div class="product-name-wrap">
+            ${p.category ? `<div class="product-category-badge">${p.category}</div>` : ''}
+            <div class="product-name">${p.name}</div>
+            ${p.condition ? `<div class="product-condition ${condClass}">
+              <div class="condition-dot"></div>${p.condition}
+            </div>` : ''}
+          </div>
+          <div class="price-box">
+            <div class="price-label">Price (LKR)</div>
+            <div class="price-value">
+              <span class="price-currency">Rs.</span>${formatPrice(p.price)}
+            </div>
+          </div>
+        </div>
+
+        <div class="specs-grid">${specsHTML}</div>
+
+        ${p.promoText ? `<div class="promo-banner">
+          <span class="promo-icon">🔥</span>
+          <span class="promo-text">${p.promoText}</span>
+        </div>` : ''}
+      </div>
+    </div>`;
+
+  buildDots();
+  buildCategoryStrip();
+  resetWatchdog();
+}
+
+// ═══════════════════════════════════════════════════
+//  SLIDE SHOW
+// ═══════════════════════════════════════════════════
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % products.length;
+  renderSlide(currentSlide);
+  resetWatchdog();
+}
+
+function startSlideshow() {
+  if (slideTimer) clearInterval(slideTimer);
+  renderSlide(currentSlide);
+  slideTimer = setInterval(nextSlide, SLIDE_INTERVAL);
+}
+
+// ═══════════════════════════════════════════════════
+//  AUTO REFRESH
+// ═══════════════════════════════════════════════════
+async function silentRefresh() {
+  try {
+    const fresh = await fetchData();
+    if (fresh.length) {
+      products = fresh;
+      // don't reset currentSlide – continuity
+    }
+  } catch(e) {
+    console.warn('[REFRESH]', e.message);
+    // keep showing existing data
   }
-
-  // All retries failed — show message and hard reload in 12s
-  document.getElementById('omsg').textContent='⚠️ CANNOT REACH SERVER';
-  document.getElementById('ocd').style.display='block';
-  document.getElementById('ocd').textContent='Reloading in 12s…';
-  setTimeout(function(){location.reload();},12000);
+  resetWatchdog();
 }
 
-document.addEventListener('visibilitychange',function(){
-  if(!document.hidden&&running) silentRefresh();
+function scheduleRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(silentRefresh, REFRESH_INTERVAL);
+}
+
+// ═══════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════
+async function boot() {
+  resetWatchdog();
+  buildTickerContent();
+
+  try {
+    products = await loadWithRetry();
+    hideLoading();
+    currentSlide = 0;
+    startSlideshow();
+    scheduleRefresh();
+    isRunning = true;
+  } catch(err) {
+    showError('⚠️ FAILED TO LOAD PRODUCTS – RELOADING…');
+    setTimeout(() => location.reload(), 10000);
+  }
+}
+
+// ─── Visibility API: re-sync when tab becomes visible ───
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && isRunning) {
+    silentRefresh();
+    resetWatchdog();
+  }
 });
+
+// ─── Start ───────────────────────────────────────────────
 window.addEventListener('load', boot);
 </script>
 </body>
