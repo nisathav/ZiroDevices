@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZIRO DEVICES – Digital Signage</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
 
@@ -408,25 +409,26 @@
     padding: 0 40px;
     gap: 24px;
   }
-  .wa-btn {
-    background: #25D366;
-    border-radius: 14px;
-    padding: 14px 24px;
-    display: flex; align-items: center; gap: 12px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 20px rgba(37,211,102,0.3);
-    text-decoration: none;
-  }
-  .wa-btn svg { width: 52px; height: 28px; fill: white; }
-  .wa-btn-text {
+
+  /* ─── QR CODE (replaces WhatsApp button) ─────────── */
+  .wa-qr-wrap {
     display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+    flex-shrink: 0;
   }
-  .wa-btn-label {
-    font-size: 20px; font-weight: 700;
-    color: rgba(255,255,255,0.8); letter-spacing: 2px; text-transform: uppercase;
+  .wa-qr-box {
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    width: 200px; height: 200px;
+    display: flex; align-items: center; justify-content: center;
   }
-  .wa-btn-action {
-    font-size: 32px; font-weight: 700; color: white;
+  .wa-qr-box canvas, .wa-qr-box img { width: 180px !important; height: 180px !important; }
+  .wa-qr-label {
+    font-size: 18px; font-weight: 700;
+    color: #25D366; letter-spacing: 1px;
+    text-transform: uppercase;
   }
 
   .footer-divider {
@@ -549,15 +551,12 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    <a class="wa-btn" href="#">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-      </svg>
-      <div class="wa-btn-text">
-        <span class="wa-btn-label">Order via</span>
-        <span class="wa-btn-action">WhatsApp</span>
-      </div>
-    </a>
+
+    <!-- QR Code -->
+    <div class="wa-qr-wrap">
+      <div class="wa-qr-box" id="waQrCode"></div>
+      <span class="wa-qr-label">📲 Scan to WhatsApp</span>
+    </div>
 
     <div class="footer-divider"></div>
 
@@ -582,6 +581,7 @@
         Open Daily<br>9 AM – 8 PM
       </div>
     </div>
+
   </div>
 
 </div>
@@ -590,11 +590,7 @@
 // ═══════════════════════════════════════════════════
 //  CONFIG
 // ═══════════════════════════════════════════════════
-// ── STEP 1: Paste your Google Apps Script Web App URL below ──────
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeVL6-g8zYnvqa0jJaV5aGMssip33G0gXz9PzIJY2RmJdv26p7NQdYuvrTygv3jEoi/exec';
-// ─────────────────────────────────────────────────────────────────
-
-// Fallback direct CSV (used if Apps Script URL not set yet)
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBgmm7um1FHVT4MXt3ip-_D3qRel7jmkEtDD3xI0wikg9Jr07r5eUayZb5YRIHxfn4jw_V8yUSjkma/pub?output=csv';
 
 const SLIDE_INTERVAL   = 30000;
@@ -670,18 +666,18 @@ function csvToProducts(rows) {
   return data
     .filter(r => r[0])
     .map(r => ({
-      name:      r[0]  || '',
-      category:  r[1]  || 'Laptop',
-      price:     r[2]  || '',
-      condition: r[3]  || '',
-      processor: r[4]  || '',
-      ram:       r[5]  || '',
-      storage:   r[6]  || '',
-      display:   r[7]  || '',
-      graphicsCard:   r[8]  || '',
-      os:        r[9]  || '',
-      imageUrl:  r[10] || '',
-      promoText: r[11] || ''
+      name:         r[0]  || '',
+      category:     r[1]  || 'Laptop',
+      price:        r[2]  || '',
+      condition:    r[3]  || '',
+      processor:    r[4]  || '',
+      ram:          r[5]  || '',
+      storage:      r[6]  || '',
+      display:      r[7]  || '',
+      graphicsCard: r[8]  || '',
+      os:           r[9]  || '',
+      imageUrl:     r[10] || '',
+      promoText:    r[11] || ''
     }));
 }
 
@@ -848,6 +844,18 @@ function formatPrice(price) {
   return num.toLocaleString('en-LK');
 }
 
+function generateWaQr() {
+  const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi ZIRO DEVICES! I'd like to enquire about a product.")}`;
+  new QRCode(document.getElementById('waQrCode'), {
+    text: waLink,
+    width: 180,
+    height: 180,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
 function buildTickerContent() {
   const items = [
     '📞 075 675 4168',
@@ -891,12 +899,12 @@ function renderSlide(index) {
   const condClass = getConditionClass(p.condition);
 
   const specsData = [
-    { label: 'Processor', value: p.processor },
-    { label: 'RAM',       value: p.ram },
-    { label: 'Storage',   value: p.storage },
-    { label: 'Display',   value: p.display },
-    { label: 'Graphics Card',   value: p.graphicsCard },
-    { label: 'OS',        value: p.os },
+    { label: 'Processor',     value: p.processor },
+    { label: 'RAM',           value: p.ram },
+    { label: 'Storage',       value: p.storage },
+    { label: 'Display',       value: p.display },
+    { label: 'Graphics Card', value: p.graphicsCard },
+    { label: 'OS',            value: p.os },
   ].filter(s => s.value);
 
   const specsHTML = specsData.map(s => `
@@ -916,10 +924,6 @@ function renderSlide(index) {
         </svg>
         <span>NO IMAGE</span>
       </div>`;
-
-  // Build WhatsApp order link
-  const waMsg = encodeURIComponent(`Hi ZIRO DEVICES! I'm interested in: ${p.name} (${p.price ? 'LKR ' + formatPrice(p.price) : ''}). Please share more details.`);
-  document.querySelector('.wa-btn').href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
 
   main.innerHTML = `
     <div class="product-slide visible">
@@ -999,6 +1003,7 @@ function scheduleRefresh() {
 async function boot() {
   resetWatchdog();
   buildTickerContent();
+  generateWaQr();
 
   try {
     products = await loadWithRetry();
@@ -1029,7 +1034,6 @@ function scaleToScreen() {
   const scaleY = window.innerHeight / DESIGN_H;
   const scale  = Math.min(scaleX, scaleY);
   document.body.style.transform = `scale(${scale})`;
-  // Centre if there are letterbox bars
   const offsetX = (window.innerWidth  - DESIGN_W * scale) / 2;
   const offsetY = (window.innerHeight - DESIGN_H * scale) / 2;
   document.body.style.marginLeft = offsetX + 'px';
