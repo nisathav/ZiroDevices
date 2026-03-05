@@ -278,19 +278,25 @@
 
   /* Specs Grid */
   .specs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 18px 40px;
-    align-content: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
     flex: 1;
     padding: 0 20px;
+    gap: 0;
   }
   .spec-item {
-    background:none;
-    border:none;
-    padding:6px 0;
-    text-align:center;
+    background: none;
+    border: none;
+    padding: 0 20px;
+    text-align: center;
     display: flex; flex-direction: column; gap: 3px;
+    border-right: 1px solid rgba(245,168,0,0.2);
+    flex: 1;
+  }
+  .spec-item:last-child {
+    border-right: none;
   }
   .spec-label {
     font-size: 22px; font-weight: 600;
