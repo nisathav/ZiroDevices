@@ -237,6 +237,18 @@
     font-size: 20px; letter-spacing: 3px; text-transform: uppercase;
     color: rgba(255,255,255,0.5); margin-bottom: 4px;
   }
+  .price-original {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 55px; font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    text-decoration: line-through;
+    text-decoration-color: #f44336;
+    text-decoration-thickness: 3px;
+    line-height: 1;
+  }
+  .price-original .price-currency {
+    font-size: 22px;
+  }
   .price-value {
     font-family: 'Rajdhani', sans-serif;
     font-size: 100px; font-weight: 800;
@@ -252,6 +264,15 @@
   .price-currency {
     font-size: 35px; font-weight: 600;
     vertical-align: super; color: var(--gold-light);
+  }
+  .price-save-badge {
+    display: inline-block;
+    background: #f44336;
+    color: white;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 12px; border-radius: 6px;
+    margin-top: 6px;
   }
 
   /* Specs Grid */
@@ -605,7 +626,8 @@ function csvToProducts(rows) {
       graphicsCard: r[8]  || '',
       os:           r[9]  || '',
       imageUrl:     r[10] || '',
-      promoText:    r[11] || ''
+      promoText:      r[11] || '',
+      discountPrice:  r[12] || ''
     }));
 }
 
@@ -845,9 +867,21 @@ function renderSlide(index) {
           </div>
           <div class="price-box">
             <div class="price-label">Price (LKR)</div>
-            <div class="price-value">
-              <span class="price-currency">Rs.</span>${formatPrice(p.price)}
-            </div>
+            ${p.discountPrice ? `
+              <div class="price-original">
+                <span class="price-currency">Rs.</span>${formatPrice(p.price)}
+              </div>
+              <div class="price-value">
+                <span class="price-currency">Rs.</span>${formatPrice(p.discountPrice)}
+              </div>
+              <div class="price-save-badge">
+                SAVE Rs.${formatPrice((parseFloat(p.price.toString().replace(/[^0-9.]/g,'')) - parseFloat(p.discountPrice.toString().replace(/[^0-9.]/g,''))).toString())}
+              </div>
+            ` : `
+              <div class="price-value">
+                <span class="price-currency">Rs.</span>${formatPrice(p.price)}
+              </div>
+            `}
           </div>
         </div>
 
