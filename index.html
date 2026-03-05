@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1080, height=1920">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZIRO DEVICES – Digital Signage</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
@@ -21,12 +21,20 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html, body {
+  html {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  body {
     width: 1080px;
     height: 1920px;
     overflow: hidden;
     background: var(--bg);
     font-family: 'Exo 2', sans-serif;
+    transform-origin: top left;
   }
 
   /* ─── BACKGROUND ─────────────────────────────────── */
@@ -589,7 +597,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeVL6-g8zYnvqa
 // Fallback direct CSV (used if Apps Script URL not set yet)
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBgmm7um1FHVT4MXt3ip-_D3qRel7jmkEtDD3xI0wikg9Jr07r5eUayZb5YRIHxfn4jw_V8yUSjkma/pub?output=csv';
 
-const SLIDE_INTERVAL   = 6000;
+const SLIDE_INTERVAL   = 30000;
 const REFRESH_INTERVAL = 60000;
 const WATCHDOG_TIMEOUT = 90000;
 const MAX_RETRIES = 5;
@@ -1003,6 +1011,23 @@ document.addEventListener('visibilitychange', () => {
     resetWatchdog();
   }
 });
+
+// ─── Auto-scale to fill any screen ──────────────────────────────
+function scaleToScreen() {
+  const DESIGN_W = 1080;
+  const DESIGN_H = 1920;
+  const scaleX = window.innerWidth  / DESIGN_W;
+  const scaleY = window.innerHeight / DESIGN_H;
+  const scale  = Math.min(scaleX, scaleY);
+  document.body.style.transform = `scale(${scale})`;
+  // Centre if there are letterbox bars
+  const offsetX = (window.innerWidth  - DESIGN_W * scale) / 2;
+  const offsetY = (window.innerHeight - DESIGN_H * scale) / 2;
+  document.body.style.marginLeft = offsetX + 'px';
+  document.body.style.marginTop  = offsetY + 'px';
+}
+window.addEventListener('resize', scaleToScreen);
+scaleToScreen();
 
 // ─── Start ───────────────────────────────────────────────
 window.addEventListener('load', boot);
