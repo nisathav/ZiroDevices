@@ -278,25 +278,19 @@
 
   /* Specs Grid */
   .specs-grid {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px 40px;
+    align-content: center;
     flex: 1;
     padding: 0 20px;
-    gap: 0;
   }
   .spec-item {
-    background: none;
-    border: none;
-    padding: 0 20px;
-    text-align: center;
+    background:none;
+    border:none;
+    padding:6px 0;
+    text-align:center;
     display: flex; flex-direction: column; gap: 3px;
-    border-right: 1px solid rgba(245,168,0,0.2);
-    flex: 1;
-  }
-  .spec-item:last-child {
-    border-right: none;
   }
   .spec-label {
     font-size: 22px; font-weight: 600;
@@ -349,50 +343,7 @@
     box-shadow: 0 0 6px rgba(245,168,0,0.6);
   }
 
-  /* ─── TICKER ─────────────────────────────────────── */
-  .ticker-wrap {
-    height: 90px; flex-shrink: 0;
-    background: var(--gold);
-    overflow: hidden;
-    display: flex; align-items: center;
-    position: relative;
-    border-top: 2px solid var(--gold-dark);
-    border-bottom: 2px solid var(--gold-dark);
-  }
-  .ticker-label {
-    background: var(--navy-dark);
-    color: var(--gold);
-    font-size: 24px; font-weight: 800;
-    letter-spacing: 3px; text-transform: uppercase;
-    padding: 0 24px;
-    height: 100%; display: flex; align-items: center;
-    white-space: nowrap;
-    flex-shrink: 0;
-    z-index: 2;
-    border-right: 3px solid var(--gold-dark);
-  }
-  .ticker-track {
-    flex: 1; overflow: hidden;
-  }
-  .ticker-inner {
-    display: flex; align-items: center;
-    white-space: nowrap;
-    animation: ticker-scroll 28s linear infinite;
-  }
-  .ticker-item {
-    font-size: 30px; font-weight: 700;
-    color: var(--navy-dark);
-    padding: 0 48px;
-    letter-spacing: 1px;
-  }
-  .ticker-sep {
-    color: var(--navy-dark);
-    font-size: 34px; opacity: 0.4;
-  }
-  @keyframes ticker-scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+
 
   @keyframes pricePulse {
     0% { transform: scale(1); }
@@ -547,13 +498,7 @@
   <!-- SLIDE DOTS -->
   <div class="slide-counter" id="slideCounter"></div>
 
-  <!-- TICKER -->
-  <div class="ticker-wrap">
-    <div class="ticker-label">📞 CONTACT</div>
-    <div class="ticker-track">
-      <div class="ticker-inner" id="tickerInner"></div>
-    </div>
-  </div>
+
 
   <!-- FOOTER -->
   <div class="footer">
@@ -862,23 +807,7 @@ function generateWaQr() {
   });
 }
 
-function buildTickerContent() {
-  const items = [
-    '📞 075 675 4168',
-    '📞 076 556 1881',
-    '📍 Kinniya, Trincomalee',
-    '💬 Order via WhatsApp anytime!',
-    '🛡️ All products come with warranty',
-    '💻 Quality laptops at unbeatable prices',
-    '⭐ Visit ZIRO DEVICES today!',
-    '🔧 Sales · Repairs · Accessories',
-  ];
-  const doubled = [...items, ...items];
-  const inner = document.getElementById('tickerInner');
-  inner.innerHTML = doubled.map(t =>
-    `<span class="ticker-item">${t}</span><span class="ticker-sep">•</span>`
-  ).join('');
-}
+
 
 function buildCategoryStrip() {
   const cats = [...new Set(products.map(p => p.category).filter(Boolean))].slice(0, 5);
@@ -1008,7 +937,6 @@ function scheduleRefresh() {
 // ═══════════════════════════════════════════════════
 async function boot() {
   resetWatchdog();
-  buildTickerContent();
   generateWaQr();
 
   try {
