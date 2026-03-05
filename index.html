@@ -277,12 +277,12 @@
 
   /* Specs Grid */
   .specs-grid {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 40px;
+    align-content: center;
     flex: 1;
+    padding: 0 20px;
   }
   .spec-item {
     background:none;
@@ -656,8 +656,15 @@ function parseCSV(text) {
 
 function csvToProducts(rows) {
   if (!rows.length) return [];
-  const isHeader = isNaN(parseFloat(rows[0][0])) && /[a-zA-Z]/.test(rows[0][0]);
-  const data = isHeader ? rows.slice(1) : rows;
+  let dataStart = 0;
+  for (let i = 0; i < Math.min(rows.length, 5); i++) {
+    const cell = (rows[i][0] || '').toLowerCase();
+    if (cell.includes('product') || cell.includes('name')) {
+      dataStart = i + 1;
+      break;
+    }
+  }
+  const data = rows.slice(dataStart);
   return data
     .filter(r => r[0])
     .map(r => ({
@@ -669,7 +676,7 @@ function csvToProducts(rows) {
       ram:       r[5]  || '',
       storage:   r[6]  || '',
       display:   r[7]  || '',
-      battery:   r[8]  || '',
+      graphicsCard:   r[8]  || '',
       os:        r[9]  || '',
       imageUrl:  r[10] || '',
       promoText: r[11] || ''
@@ -886,7 +893,7 @@ function renderSlide(index) {
     { label: 'RAM',       value: p.ram },
     { label: 'Storage',   value: p.storage },
     { label: 'Display',   value: p.display },
-    { label: 'Battery',   value: p.battery },
+    { label: 'Graphics Card',   value: p.graphicsCard },
     { label: 'OS',        value: p.os },
   ].filter(s => s.value);
 
