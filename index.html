@@ -127,29 +127,7 @@
     letter-spacing: 1px;
   }
 
-  /* ─── CATEGORY STRIP ─────────────────────────────── */
-  .category-strip {
-    height: 56px; flex-shrink: 0;
-    background: linear-gradient(90deg, var(--navy-dark), var(--navy));
-    border-bottom: 2px solid rgba(245,168,0,0.3);
-    display: flex; align-items: center; justify-content: center;
-    gap: 0;
-    overflow: hidden;
-  }
-  .cat-tab {
-    padding: 0 32px;
-    font-size: 15px; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: rgba(255,255,255,0.45);
-    border-right: 1px solid rgba(255,255,255,0.1);
-    height: 100%; display: flex; align-items: center;
-    transition: all 0.4s;
-  }
-  .cat-tab.active {
-    color: var(--gold);
-    background: rgba(245,168,0,0.08);
-    border-bottom: 3px solid var(--gold);
-  }
+
 
   /* ─── MAIN CONTENT ───────────────────────────────── */
   .main-content {
@@ -487,8 +465,7 @@
     </div>
   </div>
 
-  <!-- CATEGORY STRIP -->
-  <div class="category-strip" id="categoryStrip"></div>
+
 
   <!-- MAIN CONTENT -->
   <div class="main-content" id="mainContent">
@@ -809,14 +786,7 @@ function generateWaQr() {
 
 
 
-function buildCategoryStrip() {
-  const cats = [...new Set(products.map(p => p.category).filter(Boolean))].slice(0, 5);
-  const strip = document.getElementById('categoryStrip');
-  const activeCat = products[currentSlide]?.category || '';
-  strip.innerHTML = cats.map(c =>
-    `<div class="cat-tab${c === activeCat ? ' active' : ''}">${c}</div>`
-  ).join('');
-}
+
 
 function buildDots() {
   const ctr = document.getElementById('slideCounter');
@@ -891,7 +861,6 @@ function renderSlide(index) {
     </div>`;
 
   buildDots();
-  buildCategoryStrip();
   resetWatchdog();
 }
 
