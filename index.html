@@ -52,7 +52,7 @@
 
   /* ─── HEADER ─────────────────────────────────────── */
   .header {
-    height: 160px;
+    height: 220px;
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
     border-bottom: 4px solid var(--gold);
     display: flex; align-items: center; justify-content: space-between;
@@ -78,7 +78,7 @@
   }
   .brand-name {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 52px; font-weight: 700;
+    font-size: 68px; font-weight: 700;
     color: var(--white);
     letter-spacing: 4px;
     line-height: 1;
@@ -154,20 +154,17 @@
   /* ─── PRODUCT SLIDE ──────────────────────────────── */
   .product-slide {
     flex: 1;
-    display: flex;
+    display: none;
     flex-direction: column;
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease, transform 0.6s ease;
     padding: 28px 40px 20px;
-    position: absolute;
-    top: 216px; /* header + strip */
-    left: 0; right: 0;
-    bottom: 180px; /* ticker + footer */
   }
   .product-slide.visible {
-    opacity: 1; transform: translateY(0);
-    position: relative; top: auto; bottom: auto;
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
     flex: 1;
   }
 
@@ -197,6 +194,7 @@
     filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
     position: relative; z-index: 1;
     transition: transform 0.3s ease;
+    animation: floatLaptop 5s ease-in-out infinite;
   }
   .img-placeholder {
     display: flex; flex-direction: column; align-items: center; gap: 12px;
@@ -223,7 +221,7 @@
   }
   .product-name {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 42px; font-weight: 700;
+    font-size: 60px; font-weight: 700;
     color: var(--white);
     line-height: 1.1;
     letter-spacing: 1px;
@@ -254,10 +252,15 @@
   }
   .price-value {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 54px; font-weight: 700;
+    font-size: 88px; font-weight: 800;
+    text-shadow:
+      0 0 10px rgba(255,215,0,0.9),
+      0 0 25px rgba(255,215,0,0.8),
+      0 0 45px rgba(255,215,0,0.6),
+      0 0 60px rgba(245,168,0,0.4);
+    animation: pricePulse 2s infinite;
     color: var(--gold);
     line-height: 1;
-    text-shadow: 0 0 30px rgba(245,168,0,0.4);
   }
   .price-currency {
     font-size: 24px; font-weight: 600;
@@ -266,17 +269,18 @@
 
   /* Specs Grid */
   .specs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
     flex: 1;
   }
   .spec-item {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-left: 3px solid rgba(245,168,0,0.5);
-    border-radius: 10px;
-    padding: 14px 18px;
+    background:none;
+    border:none;
+    padding:6px 0;
+    text-align:center;
     display: flex; flex-direction: column; gap: 3px;
   }
   .spec-label {
@@ -307,7 +311,7 @@
   .promo-icon { font-size: 28px; flex-shrink: 0; }
   .promo-text {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 24px; font-weight: 700;
+    font-size: 34px; font-weight: 800; text-align:center;
     color: var(--navy-dark);
     letter-spacing: 1px;
     line-height: 1.2;
@@ -375,9 +379,21 @@
     100% { transform: translateX(-50%); }
   }
 
+  @keyframes pricePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes floatLaptop {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+  }
+
   /* ─── FOOTER ─────────────────────────────────────── */
   .footer {
-    height: 120px; flex-shrink: 0;
+    height: 180px; flex-shrink: 0;
     background: linear-gradient(135deg, var(--navy-dark) 0%, #0e1260 100%);
     border-top: 3px solid rgba(245,168,0,0.5);
     display: flex; align-items: center;
@@ -464,6 +480,7 @@
     font-size: 14px; color: var(--gold);
     letter-spacing: 1px;
   }
+
 </style>
 </head>
 <body>
@@ -483,7 +500,7 @@
   <!-- HEADER -->
   <div class="header">
     <div class="logo-wrap">
-      <img class="logo-img" id="logoImg" src="https://i.imgur.com/PTV7uqp.jpeg"
+      <img class="logo-img" id="logoImg" src="https://i.imgur.com/uE4Bc7W.png"
            onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'"
            alt="ZIRO DEVICES Logo">
       <div class="logo-fallback" id="logoFallback" style="display:none">
@@ -566,11 +583,11 @@
 //  CONFIG
 // ═══════════════════════════════════════════════════
 // ── STEP 1: Paste your Google Apps Script Web App URL below ──────
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvM_gtLRC0dni8_bGtlidm5HkvlUdBO2D7UI0onWhg7_bAwlOqtxGS_doJNm5uc8dO/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeVL6-g8zYnvqa0jJaV5aGMssip33G0gXz9PzIJY2RmJdv26p7NQdYuvrTygv3jEoi/exec';
 // ─────────────────────────────────────────────────────────────────
 
 // Fallback direct CSV (used if Apps Script URL not set yet)
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT79zJqeHJfDGaXW2-KlZW9Qo-cSbYKOjoP3XqHUP9eHlZoJcUADUiunkU0pWZKV8auZELg7B-EFZ1Y/pub?output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBgmm7um1FHVT4MXt3ip-_D3qRel7jmkEtDD3xI0wikg9Jr07r5eUayZb5YRIHxfn4jw_V8yUSjkma/pub?output=csv';
 
 const SLIDE_INTERVAL   = 6000;
 const REFRESH_INTERVAL = 60000;
@@ -631,7 +648,8 @@ function parseCSV(text) {
 
 function csvToProducts(rows) {
   if (!rows.length) return [];
-  const data = rows[0][0].toLowerCase().includes('product') ? rows.slice(1) : rows;
+  const isHeader = isNaN(parseFloat(rows[0][0])) && /[a-zA-Z]/.test(rows[0][0]);
+  const data = isHeader ? rows.slice(1) : rows;
   return data
     .filter(r => r[0])
     .map(r => ({
@@ -646,7 +664,7 @@ function csvToProducts(rows) {
       battery:   r[8]  || '',
       os:        r[9]  || '',
       imageUrl:  r[10] || '',
-      promoText: r[11] || 'Ask about our special deals & warranty packages!'
+      promoText: r[11] || ''
     }));
 }
 
@@ -678,7 +696,7 @@ async function fetchData() {
     }
   }
 
-  // ── Strategy 2: Direct fetch (works on GitHub Pages + published sheet) ──
+  // ── Strategy 2: Direct CSV fetch ──────────────────────────────────
   try {
     console.log('[FETCH] Trying direct CSV fetch…');
     const res = await fetch(CSV_URL + bust, { cache: 'no-store', mode: 'cors' });
@@ -698,7 +716,52 @@ async function fetchData() {
     lastErr = err;
   }
 
+  // ── Strategy 3: no-cors fetch via hidden iframe proxy ─────────────
+  try {
+    console.log('[FETCH] Trying iframe CSV fallback…');
+    const parsed = await fetchCsvViaIframe(CSV_URL + bust);
+    if (parsed.length) {
+      console.log('[FETCH] Iframe CSV OK, products:', parsed.length);
+      retryCount = 0;
+      return parsed;
+    }
+    throw new Error('0 products via iframe');
+  } catch (err) {
+    console.warn('[FETCH] Iframe failed:', err.message);
+    lastErr = err;
+  }
+
   throw lastErr || new Error('All fetch strategies failed');
+}
+
+// Fetches CSV by injecting a temporary iframe — works around file:// CORS
+function fetchCsvViaIframe(url) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('iframe timeout')), 12000);
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    iframe.onload = () => {
+      try {
+        const text = iframe.contentDocument?.body?.innerText || iframe.contentWindow?.document?.body?.innerText;
+        clearTimeout(timeout);
+        document.body.removeChild(iframe);
+        if (!text) throw new Error('no content');
+        const rows = parseCSV(text);
+        resolve(csvToProducts(rows));
+      } catch(e) {
+        clearTimeout(timeout);
+        try { document.body.removeChild(iframe); } catch(_) {}
+        reject(e);
+      }
+    };
+    iframe.onerror = () => {
+      clearTimeout(timeout);
+      try { document.body.removeChild(iframe); } catch(_) {}
+      reject(new Error('iframe load error'));
+    };
+    document.body.appendChild(iframe);
+  });
 }
 
 async function loadWithRetry() {
