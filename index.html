@@ -657,10 +657,13 @@ function parseCSV(text) {
 function csvToProducts(rows) {
   if (!rows.length) return [];
   let dataStart = 0;
-  for (let i = 0; i < Math.min(rows.length, 5); i++) {
-    const cell = (rows[i][0] || '').toLowerCase();
-    if (cell.includes('product') || cell.includes('name')) {
-      dataStart = i + 1;
+  for (let i = 0; i < Math.min(rows.length, 6); i++) {
+    const cell = (rows[i][0] || '').toLowerCase().trim();
+    // Skip title rows, contact rows, and header row — find first real data row
+    // Real data rows have a product name (not empty, not a known header/title keyword)
+    const isTitle = cell.includes('ziro') || cell.includes('template') || cell.includes('product name') || cell.includes('kinniya');
+    if (!isTitle && cell.length > 0) {
+      dataStart = i;
       break;
     }
   }
