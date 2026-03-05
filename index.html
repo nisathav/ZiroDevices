@@ -281,7 +281,7 @@
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:10px;
+    gap:18px;
     flex: 1;
   }
   .spec-item {
@@ -292,12 +292,12 @@
     display: flex; flex-direction: column; gap: 3px;
   }
   .spec-label {
-    font-size: 11px; font-weight: 600;
+    font-size: 22px; font-weight: 600;
     color: rgba(245,168,0,0.7);
     letter-spacing: 2px; text-transform: uppercase;
   }
   .spec-value {
-    font-size: 16px; font-weight: 500;
+    font-size: 36px; font-weight: 500;
     color: var(--white);
     line-height: 1.3;
   }
@@ -344,7 +344,7 @@
 
   /* ─── TICKER ─────────────────────────────────────── */
   .ticker-wrap {
-    height: 52px; flex-shrink: 0;
+    height: 90px; flex-shrink: 0;
     background: var(--gold);
     overflow: hidden;
     display: flex; align-items: center;
@@ -355,7 +355,7 @@
   .ticker-label {
     background: var(--navy-dark);
     color: var(--gold);
-    font-size: 14px; font-weight: 800;
+    font-size: 24px; font-weight: 800;
     letter-spacing: 3px; text-transform: uppercase;
     padding: 0 24px;
     height: 100%; display: flex; align-items: center;
@@ -373,14 +373,14 @@
     animation: ticker-scroll 28s linear infinite;
   }
   .ticker-item {
-    font-size: 16px; font-weight: 700;
+    font-size: 30px; font-weight: 700;
     color: var(--navy-dark);
     padding: 0 48px;
     letter-spacing: 1px;
   }
   .ticker-sep {
     color: var(--navy-dark);
-    font-size: 20px; opacity: 0.4;
+    font-size: 34px; opacity: 0.4;
   }
   @keyframes ticker-scroll {
     0% { transform: translateX(0); }
@@ -843,7 +843,7 @@ function buildTickerContent() {
   const items = [
     '📞 075 675 4168',
     '📞 076 556 1881',
-    '📍 Kinniya, Trincomalee, Sri Lanka',
+    '📍 Kinniya, Trincomalee',
     '💬 Order via WhatsApp anytime!',
     '🛡️ All products come with warranty',
     '💻 Quality laptops at unbeatable prices',
