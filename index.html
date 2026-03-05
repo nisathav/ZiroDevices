@@ -656,13 +656,12 @@ function parseCSV(text) {
 
 function csvToProducts(rows) {
   if (!rows.length) return [];
-  let dataStart = 0;
-  for (let i = 0; i < Math.min(rows.length, 6); i++) {
-    const cell = (rows[i][0] || '').toLowerCase().trim();
-    // Skip title rows, contact rows, and header row — find first real data row
-    // Real data rows have a product name (not empty, not a known header/title keyword)
-    const isTitle = cell.includes('ziro') || cell.includes('template') || cell.includes('product name') || cell.includes('kinniya');
-    if (!isTitle && cell.length > 0) {
+  // Hard skip: always skip first 3 rows (title, contact, header)
+  // then find first row where column C (index 2) is a number (the price)
+  let dataStart = 3;
+  for (let i = 3; i < Math.min(rows.length, 10); i++) {
+    const price = (rows[i][2] || '').toString().trim();
+    if (price.length > 0 && !isNaN(parseFloat(price.replace(/[^0-9.]/g, '')))) {
       dataStart = i;
       break;
     }
