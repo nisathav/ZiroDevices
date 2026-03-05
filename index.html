@@ -402,7 +402,7 @@
   }
   .contact-icon { width: 34px; height: 20px; color: var(--gold); flex-shrink: 0; }
   .contact-text {
-    font-size: 35px; font-weight: 500;
+    font-size: 30px; font-weight: 500;
     color: var(--white); letter-spacing: 0.5px;
   }
   .contact-text span { color: var(--gold); font-weight: 700; }
@@ -413,7 +413,7 @@
   }
   .location-icon { color: var(--gold); font-size: 22px; }
   .location-name {
-    font-size: 35px; font-weight: 600;
+    font-size: 25px; font-weight: 600;
     color: rgba(255,255,255,0.7);
     letter-spacing: 1px;
     line-height: 1.5;
@@ -539,7 +539,7 @@
 // ═══════════════════════════════════════════════════
 //  CONFIG
 // ═══════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeVL6-g8zYnvqa0jJaV5aGMssip33G0gXz9PzIJY2RmJdv26p7NQdYuvrTygv3jEoi/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNGyz8ztitTlhMi4xvfOPvlqF4CMhWEfNH1jeM5R2QO3KgN-exnwyMXcdjVp7Mtya5/exec';
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBgmm7um1FHVT4MXt3ip-_D3qRel7jmkEtDD3xI0wikg9Jr07r5eUayZb5YRIHxfn4jw_V8yUSjkma/pub?output=csv';
 
 const SLIDE_INTERVAL   = 30000;
@@ -649,8 +649,13 @@ async function fetchData() {
       const json = await res.json();
       if (json.data && json.data.length) {
         console.log('[FETCH] Apps Script OK, products:', json.data.length);
+        console.log('[FETCH] First product raw:', JSON.stringify(json.data[0]));
         retryCount = 0;
-        return json.data;
+        // Normalize field name: handle both 'discountedPrice' and 'discountPrice'
+        return json.data.map(p => ({
+          ...p,
+          discountPrice: p.discountedPrice || p.discountPrice || ''
+        }));
       }
       throw new Error('Empty data from Apps Script');
     } catch (err) {
