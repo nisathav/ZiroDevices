@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1080, height=1920">
+<meta name="viewport" content="width=1080, height=1920, initial-scale=1.0">
+<style>
+  html { zoom: 1; transform-origin: top left; }
+</style>
 <title>ZIRO DEVICES – Digital Signage</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
@@ -943,6 +946,19 @@ document.addEventListener('visibilitychange', () => {
 
 // ─── Start ───────────────────────────────────────────────
 window.addEventListener('load', boot);
+(function() {
+    function fitScreen() {
+      const scaleX = window.screen.width  / 1080;
+      const scaleY = window.screen.height / 1920;
+      const scale  = Math.min(scaleX, scaleY);
+      document.documentElement.style.transform = 'scale(' + scale + ')';
+      document.documentElement.style.transformOrigin = 'top left';
+      document.documentElement.style.width  = '1080px';
+      document.documentElement.style.height = '1920px';
+    }
+    fitScreen();
+    window.addEventListener('resize', fitScreen);
+  })();
 </script>
 </body>
 </html>
